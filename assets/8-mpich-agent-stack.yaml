@@ -5,10 +5,6 @@ services:
     image: alfianisnan26/konfersi-mpi:latest
     deploy:
       replicas: 1
-      resources:
-        limits:
-            cpus: '2'
-            memory: 2500M
       placement:
         constraints:
           - node.role == manager
@@ -27,14 +23,11 @@ services:
   mpi_worker:
     image: alfianisnan26/konfersi-mpi:latest
     deploy:
-      mode: global
-      # resources:
-      #   limits:
-      #       cpus: '15.5'
-      #       memory: 7500M
-      placement:
-        constraints:
-          - node.role == worker
+      replicas: 1
+      resources:
+        limits:
+            cpus: '15'
+            memory: 2500M
     volumes:
       - mpi.vol:/home/mpi/workspace
     networks:
@@ -50,7 +43,7 @@ volumes:
     driver: local
     driver_opts:
       type: nfs
-      o: "addr=nfs.swarm.isnan.me,nfsvers=4.1,rw,hard,nolock"
+      o: "addr=${MASTER_NODE_IP},nfsvers=4.1,rw,hard,nolock"
       device: ":/mpich"
 
 networks:

@@ -2,15 +2,6 @@ import os
 import subprocess
 import sys
 import json
-
-# Check if Flask is installed; install if not
-try:
-    from flask import Flask
-except ImportError:
-    print("Flask not found. Installing...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "flask"])
-
-# Import Flask after ensuring it is installed
 from flask import Flask, jsonify, request, send_file, abort
 
 # Create the Flask app
@@ -76,7 +67,7 @@ def get_swarm_token():
     """Retrieve the Docker Swarm worker token."""
     try:
         result = subprocess.run(
-            ["docker", "swarm", "join-token", "-q", "worker"],
+            ["sudo", "docker", "swarm", "join-token", "-q", "worker"],
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -85,18 +76,6 @@ def get_swarm_token():
         return jsonify({"token": result.stdout.strip()}), 200
     except subprocess.CalledProcessError as e:
         abort(500, description=f"Error retrieving swarm token: {e.stderr.strip()}")
-
-# Function to perform a ping test
-def ping_test(target):
-    try:
-        response = subprocess.run(["ping", "-c", "4", target], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if response.returncode == 0:
-            avg_ping = response.stdout.split("avg = ")[1].split("/")[1]  # Extract average ping from ping output
-            return {"target": target, "status": "success", "ping_avg_ms": avg_ping}
-        else:
-            return {"target": target, "status": "failed", "ping_avg_ms": None}
-    except Exception as e:
-        return {"target": target, "status": "failed", "ping_avg_ms": None, "error": str(e)}
 
 # Function to perform a speed test
 def speed_test():
@@ -117,22 +96,10 @@ def speed_test():
 # New endpoint for network testing
 @app.route("/network/test", methods=["GET"])
 def network_test():
-    """Perform network tests (ping and speed test) for multiple targets."""
-    targets = request.args.get("target", "").split(",")  # Get targets from query parameter
-    results = []
-    
-    # Perform ping test for each target
-    for target in targets:
-        if target.strip():  # Skip empty targets
-            ping_result = ping_test(target)
-            results.append(ping_result)
-    
     # Perform speed test
     speed_result = speed_test()
-    results.append({"speed_test": speed_result})
-    
-    return jsonify(results)
+    return jsonify(speed_result)
 
 # Run the Flask app
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=8181)

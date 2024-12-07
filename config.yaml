@@ -17,12 +17,13 @@ master:
   os_name: ubuntu
   os_version: 20.04-lts
   cloud_init:
-    path: /home/ubuntu
     files: assets
     runcmd:
       - 0-init-server.sh
     environments:
       - "TEST_ENV_MASTER=this env was came from master config"
+      - "GDRIVE_ROOT_FOLDER_ID=1-fxBjSiB0q3qYIic2r_dGomP88xgn4Sj"
+      - "GDRIVE_CREDENTIAL_FILE=konfersi-service-account-gdrive.json"
   init_resources:
     cpu: 2 # min
     memory: 2 # min
@@ -37,7 +38,6 @@ worker:
   os_name: ubuntu
   os_version: 20.04-lts
   cloud_init:
-    path: /home/ubuntu
     files: assets
     runcmd:
       - 0-init-server.sh

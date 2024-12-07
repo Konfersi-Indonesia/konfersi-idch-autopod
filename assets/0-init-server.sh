@@ -28,6 +28,8 @@ echo "Python 3 and pip have been installed successfully."
 python3 --version
 pip3 --version
 
+python3 -m pip install flask
+
 echo "Installation complete."
 
 # Loop through all .sh files in the current directory and process them
@@ -46,9 +48,8 @@ echo "All .sh files have been processed."
 
 # Define variables for paths and other values
 SCRIPT_PATH="${CLOUD_INIT_WORKDIR:-/home/ubuntu}" 
-USER="${NODE_USER:-ubuntu}"
 SYSTEMD_SERVICE_PATH="/etc/systemd/system/server.service"
-
+NODE_ROLE="${NODE_ROLE:-master}"
 SERVER_SCRIPT="1a-server.py"
 INIT_SCRIPT="1b-init-runner.py"
 
@@ -65,8 +66,8 @@ After=network.target
 ExecStart=/usr/bin/python3 "$SCRIPT_PATH/$SERVER_SCRIPT"
 WorkingDirectory=$SCRIPT_PATH
 Restart=on-failure
-User=$USER
-Group=$USER
+User=root
+Group=root
 StandardOutput=append:$LOG_FILE
 StandardError=append:$LOG_FILE
 
@@ -84,6 +85,6 @@ systemctl start server.service
 
 echo "Running python scripts worker"
 
-python3 "${SCRIPT_PATH}/${INIT_SCRIPT}" --workdir ${SCRIPT_PATH} --role ${NODE_TYPE} &
+python3 "${SCRIPT_PATH}/${INIT_SCRIPT}" --workdir ${SCRIPT_PATH} --role ${NODE_ROLE} &
 
 echo "Setup complete."

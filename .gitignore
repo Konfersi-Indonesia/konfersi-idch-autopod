@@ -2,3 +2,4 @@
 keys/
 .venv
 *.log
+*/konfersi-service-account-gdrive.json

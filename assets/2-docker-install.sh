@@ -16,7 +16,7 @@ sudo apt-get update
 
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-wget https://github.com/ContainX/docker-volume-netshare/releases/download/v0.36/docker-volume-netshare_0.36_amd64.deb
-sudo dpkg -i docker-volume-netshare_0.36_amd64.deb
-rm docker-volume-netshare_0.36_amd64.deb
-sudo service docker-volume-netshare start
+# wget https://github.com/ContainX/docker-volume-netshare/releases/download/v0.36/docker-volume-netshare_0.36_amd64.deb
+# sudo dpkg -i docker-volume-netshare_0.36_amd64.deb
+# rm docker-volume-netshare_0.36_amd64.deb
+# sudo service docker-volume-netshare start

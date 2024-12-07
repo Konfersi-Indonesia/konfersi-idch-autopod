@@ -88,10 +88,10 @@ def run_script(script, counters, lock):
         with lock:
             if result.returncode != 0:
                 log_json("running", f"Script {script} failed. See log for details.", script=script, log=log_tail, script_status="failed", log_file=log_file)
-                counters['failed'] += 1  # Increment failure counter
+                counters['failed'].append(log_file)
             else:
                 log_json("running", f"Script {script} executed successfully.", script=script, log=log_tail, script_status="done", log_file=log_file)
-                counters['success'] += 1  # Increment success counter
+                counters['success'].append(log_file)
 
 # Function to run a list of scripts asynchronously
 def run_scripts_async(scripts_list, counters, lock):
@@ -106,9 +106,8 @@ def run_scripts_async(scripts_list, counters, lock):
         thread.join()
 
 # Initialize counters and log file list
-counters = {'success': 0, 'failed': 0}  # Use a dictionary to store the success and failure counts
+counters = {'success': [], 'failed': []}  # Use a dictionary to store the success and failure counts
 lock = threading.Lock()  # Lock to ensure thread-safe updates to counters
-log_files = []
 
 # Run scripts sequentially and asynchronously based on structure
 for script in scripts:
@@ -118,7 +117,22 @@ for script in scripts:
     else:
         # If item is not a list, run it sequentially
         run_script(script, counters, lock)
-        log_files.append(f"{logdir}/{script.split('/')[-1]}.log")
+        
+result = []
+
+for item in counters["success"]:
+    result.append({
+        "status": "success",
+        "logfile": item,
+        "log": get_log_tail(item)
+    })
+    
+for item in counters["failed"]:
+    result.append({
+        "status": "failed",
+        "logfile": item,
+        "log": get_log_tail(item)
+    })
 
 # Final log message after all scripts run
-log_json("done", "All scripts execution completed", script_success=counters['success'], script_failed=counters['failed'], log_files=log_files)
+log_json("done", "All scripts execution completed", script_success=len(counters['success']), script_failed=len(counters['failed']), result=result)

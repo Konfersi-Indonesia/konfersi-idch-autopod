@@ -1,6 +1,10 @@
 # ID Cloudhost Autopod for Konfersi
 
-![Run on Jupyter](https://jupyter.org/assets/main-logo.svg)
+# ID Cloudhost Autopod for Konfersi
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Konfersi-Indonesia/konfersi-idch-autopod/main?filepath=autopod.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Konfersi-Indonesia/konfersi-idch-autopod/blob/main/autopod.ipynb)
+
 
 This project is designed to manage node creation and management for IDCloudHost VPS virtual machines to work as a cluster. The notebook automates tasks like node creation, health checking, management (start, stop, delete), cloud-init script generation, MPI cluster readiness, monitoring with Grafana, Portainer setup, and is based on Docker Swarm.
 
@@ -82,4 +86,4 @@ Before running this project, ensure you have the necessary dependencies installe
 
 ## Maintainer
 
-- **Alfian Isnan (alfianisnan26)
+- **Alfian Isnan** (alfianisnan26)

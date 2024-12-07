@@ -1,0 +1,1 @@
+echo "MPICH init currently not available"

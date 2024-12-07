@@ -1,7 +1,5 @@
 # ID Cloudhost Autopod for Konfersi
 
-# ID Cloudhost Autopod for Konfersi
-
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Konfersi-Indonesia/konfersi-idch-autopod/main?filepath=autopod.ipynb)
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Konfersi-Indonesia/konfersi-idch-autopod/blob/main/autopod.ipynb)
 

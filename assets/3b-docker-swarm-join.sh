@@ -19,7 +19,7 @@ if [ -z "$TOKEN" ]; then
 fi
 
 # Join the swarm using the obtained token
-docker swarm join --token "$TOKEN" "$MASTER_NODE_IP:2377"  # Default Docker Swarm port is 2377
+sudo docker swarm join --token "$TOKEN" "$MASTER_NODE_IP:2377"  # Default Docker Swarm port is 2377
 
 if [ $? -eq 0 ]; then
     echo "Successfully joined the Docker swarm."

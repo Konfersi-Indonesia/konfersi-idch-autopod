@@ -4,7 +4,7 @@ idch:
   access_name: konfersi-mpi
 
 cluster:
-  name: konfersi_mpi
+  name: konfersi_cluster
   location: sgp01
   network_uuid: 0af9b107-d1d4-4c3d-84fc-71299e5c5c32
   username: konfersiadmin
@@ -14,12 +14,12 @@ cluster:
     private: keys/id_rsa # used for SSH
 
 master:
-  os_name: ubuntu
-  os_version: 20.04-lts
+  os_name: docker
+  os_version: 24.x
   cloud_init:
     files: assets
     runcmd:
-      - 0-init-server.sh
+      - 0-empty.sh
     environments:
       - "TEST_ENV_MASTER=this env was came from master config"
       - "GDRIVE_ROOT_FOLDER_ID=1-fxBjSiB0q3qYIic2r_dGomP88xgn4Sj"

@@ -43,16 +43,11 @@ scripts = [
 # Append scripts based on the role
 if role == 'master':
     scripts += [
-        "3a-docker-swarm-init.sh",
-        [
-            "4-docker-portainer-install.sh",
-            "5-docker-grafana-install.sh",
-            "6-docker-nfs-install.sh",
-        ],
-        [
-            "7-gdrive-copy-content.sh",
-            "8-mpich-init.sh"
-        ],
+        "3a-docker-swarm-init.sh"
+        "4-docker-portainer-install.sh",
+        "5-docker-grafana-install.sh",
+        "6-docker-nfs-install.sh",
+        "8-mpich-init.sh"
     ]
 elif role == 'worker':
     scripts += [
@@ -61,7 +56,7 @@ elif role == 'worker':
 elif role == 'test':
     scripts = [
         "test1.sh",
-        ["test2.sh", "test3.sh", "test3a.sh"],
+        [ "test2.sh", "test3.sh", "test3a.sh" ],
         "test4.sh"
     ]
 

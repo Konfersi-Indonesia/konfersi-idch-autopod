@@ -16,6 +16,10 @@ This project is designed to manage node creation and management for IDCloudHost 
 - Portainer setup for container management
 - Docker Swarm based cluster management
 
+# WIP
+
+- Adding Support for Kamatera Provider
+
 ## Requirements
 
 Before running this project, ensure you have the necessary dependencies installed. These can be installed using the `requirements.txt` file.

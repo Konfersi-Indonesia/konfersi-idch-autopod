@@ -3,3 +3,4 @@ keys/
 .venv
 *.log
 */konfersi-service-account-gdrive.json
+__pycache__

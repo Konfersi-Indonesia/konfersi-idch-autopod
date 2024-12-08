@@ -2,14 +2,16 @@ import subprocess
 import threading
 import argparse
 import json
-import os
+import yaml
 
 # Set up argument parsing
 parser = argparse.ArgumentParser(description="Script Runner for Docker and Swarm setup.")
 parser.add_argument("--workdir", type=str, default="/home/ubuntu", help="Directory for work (default: /home/ubuntu)")
 parser.add_argument("--logdir", type=str, default="/var/log", help="Directory for logs (default: /var/log)")
-parser.add_argument("--role", type=str, choices=["master", "worker", "test"], default="test", help="Role for the node (default: test)")
+parser.add_argument("--role", type=str, choices=["master", "worker", "test"], help="Role for the node (default: test)")
 parser.add_argument("--log-file", type=str, default="/var/log/init-runner-executor.log", help="Set location to write log (default: /var/log/init-runner-executor.log")
+parser.add_argument("--configfile", type=str, default="config.yaml", help="Path to the YAML config file (default: config.yaml)")
+
 # Parse arguments
 args = parser.parse_args()
 
@@ -17,6 +19,7 @@ workdir = args.workdir
 logdir = args.logdir
 role = args.role
 log_file = args.log_file
+configfile = args.configfile
 
 # Function to log JSON formatted messages
 def log_json(status, message, **kwargs):
@@ -35,30 +38,23 @@ def log_json(status, message, **kwargs):
 # Log initial setup
 log_json("init", f"Role assigned to: {role}", workdir=workdir, logdir=logdir)
 
-# List of scripts based on role
-scripts = [
-    "2-docker-install.sh"
-]
+def load_config(configfile):
+    with open(configfile, 'r') as file:
+        config = yaml.safe_load(file)
+    return config
+        
 
-# Append scripts based on the role
-if role == 'master':
-    scripts += [
-        "3a-docker-swarm-init.sh"
-        "4-docker-portainer-install.sh",
-        "5-docker-grafana-install.sh",
-        "6-docker-nfs-install.sh",
-        "8-mpich-init.sh"
-    ]
-elif role == 'worker':
-    scripts += [
-        "3b-docker-swarm-join.sh"
-    ]
-elif role == 'test':
-    scripts = [
-        "test1.sh",
-        [ "test2.sh", "test3.sh", "test3a.sh" ],
-        "test4.sh"
-    ]
+# Load the configuration from the provided YAML file
+config = load_config(configfile)
+
+# Initialize the script list
+scripts = []
+
+if "global" in config:
+    scripts += config["global"]
+    
+if role:
+    scripts += config[role]
 
 # Function to get the last 10 lines of a log file
 def get_log_tail(log_file, lines=10):

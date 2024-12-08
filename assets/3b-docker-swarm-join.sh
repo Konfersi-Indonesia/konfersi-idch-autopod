@@ -7,7 +7,7 @@ if [ -z "$MASTER_NODE_IP" ]; then
 fi
 
 # URL of the master node's /docker/swarm/token endpoint
-MASTER_NODE="http://$MASTER_NODE_IP:8000"  # Use the environment variable for the master node IP
+MASTER_NODE="http://$MASTER_NODE_IP:8181"  # Use the environment variable for the master node IP
 
 # Obtain the token from the master node
 TOKEN=$(curl -s "$MASTER_NODE/docker/swarm/token" | jq -r '.token')

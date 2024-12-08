@@ -1,6 +1,6 @@
 SCRIPT_PATH="${CLOUD_INIT_WORKDIR:-/home/ubuntu}" 
 
-sudo docker run -itd --privileged \
+docker run -itd --privileged \
   --restart unless-stopped \
   -e SHARED_DIRECTORY=/data \
   -v ${SCRIPT_PATH}/nfs-data:/data \

@@ -1,7 +1,6 @@
 import os
 import subprocess
-import sys
-import json
+import argparse
 from flask import Flask, jsonify, request, send_file, abort
 
 # Create the Flask app
@@ -77,29 +76,14 @@ def get_swarm_token():
     except subprocess.CalledProcessError as e:
         abort(500, description=f"Error retrieving swarm token: {e.stderr.strip()}")
 
-# Function to perform a speed test
-def speed_test():
-    try:
-        result = subprocess.run(["speedtest-cli", "--json"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if result.returncode == 0:
-            data = json.loads(result.stdout)
-            return {
-                "download_mbps": data["download"] / 1000000,  # Convert download speed to Mbps
-                "upload_mbps": data["upload"] / 1000000,      # Convert upload speed to Mbps
-                "ping_ms": data["ping"]                        # Get ping in ms
-            }
-        else:
-            return {"error": "Speed test failed"}
-    except Exception as e:
-        return {"error": str(e)}
+# Set up argument parsing
+parser = argparse.ArgumentParser(description="Script Runner for Container Healthcheck.")
+parser.add_argument("--port", type=int, default="8181", help="Set specific exposed port (default: 8181)")
+parser.add_argument("--host", type=str, default="0.0.0.0", help="Set specific exposed host IP (default: 0.0.0.0)")
 
-# New endpoint for network testing
-@app.route("/network/test", methods=["GET"])
-def network_test():
-    # Perform speed test
-    speed_result = speed_test()
-    return jsonify(speed_result)
+# Parse arguments
+args = parser.parse_args()
 
 # Run the Flask app
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8181)
+    app.run(host=args.host, port=args.port)

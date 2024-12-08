@@ -2,7 +2,7 @@ version: '3'
 
 services:
   mpi_master:
-    image: alfianisnan26/konfersi-mpi:latest
+    image: ${MPICH_BASE_IMAGE}
     deploy:
       replicas: 1
       placement:
@@ -16,25 +16,27 @@ services:
       - mpi-cluster
     environment:
       - ROLE=master
-      - PASSWORD=konfersiindonesia
+      - PASSWORD=${MPICH_PASSWORD}
       - MASTER_HOSTNAME=mpi_master
       - WORKER_HOSTNAME=mpi_worker
 
   mpi_worker:
-    image: alfianisnan26/konfersi-mpi:latest
+    image: ${MPICH_BASE_IMAGE}
     deploy:
-      replicas: 1
+      mode: global
       resources:
         limits:
-            cpus: '15'
-            memory: 2500M
+            cpus: '${MPICH_WORKER_CPU_LIMIT}'
+            memory: '${MPICH_WORKER_MEMORY_LIMIT}M'
+      placement:
+        constraints:
+          - node.role == worker
     volumes:
       - mpi.vol:/home/mpi/workspace
     networks:
       - mpi-cluster
     environment:
       - ROLE=worker
-      - PASSWORD=konfersiindonesia
       - MASTER_HOSTNAME=mpi_master
       - WORKER_HOSTNAME=mpi_worker
 
@@ -44,7 +46,7 @@ volumes:
     driver_opts:
       type: nfs
       o: "addr=${MASTER_NODE_IP},nfsvers=4.1,rw,hard,nolock"
-      device: ":/mpich"
+      device: ":"
 
 networks:
   mpi-cluster:
@@ -52,4 +54,4 @@ networks:
     ipam:
       driver: default                   # Use the default IPAM driver
       config:
-        - subnet: 10.0.26.0/24          # Define subnet with CIDR notation (make sure to include the netmask, e.g., /24)
+        - subnet: 10.26.0.0/16          # Define subnet with CIDR notation (make sure to include the netmask, e.g., /24)

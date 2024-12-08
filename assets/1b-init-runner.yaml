@@ -1,0 +1,10 @@
+global:
+  - 2-docker-install.sh
+master:
+  - 3a-docker-swarm-init.sh
+  - 4-docker-portainer-install.sh
+  - 5-docker-grafana-install.sh
+  - 6-docker-nfs-install.sh
+  - 8-mpich-init.sh
+worker:
+  - 3b-docker-swarm-join.sh

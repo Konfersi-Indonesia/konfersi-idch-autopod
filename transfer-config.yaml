@@ -1,0 +1,6 @@
+target: "/home/mpi/workspace"
+files:
+  - "f5dc66b8d92d44f6e97fd897fdd6d87a.grib"
+  - "d4cb75bfdfdf1a132968908f10121aaf.grib"
+  - "*.tar.gz"
+  - "*.tar.bz2"

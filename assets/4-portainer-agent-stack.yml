@@ -15,19 +15,21 @@ services:
 
   portainer:
     image: portainer/portainer-ce:2.21.4
-    command: -H tcp://tasks.agent:9001 --tlsskipverify --admin-password="$(htpasswd -nb -B admin ${PORTAINER_ADMIN_PASSWORD} | cut -d ':' -f 2)"'
+    command: -H tcp://tasks.agent:9001 --tlsskipverify --admin-password-file='/var/passwd'
     ports:
       - "9443:9443"
       - "9000:9000"
       - "8000:8000"
+    volumes:
+      - portainer_data:/data
+      - ${SCRIPT_PATH}/portainer_data:/var
     networks:
       - agent_network
     deploy:
       mode: replicated
       replicas: 1
       placement:
-        constraints: 
-          - node.role == manager
+        constraints: [node.role == manager]
 
 networks:
   agent_network:

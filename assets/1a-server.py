@@ -81,6 +81,37 @@ parser = argparse.ArgumentParser(description="Script Runner for Container Health
 parser.add_argument("--port", type=int, default="8181", help="Set specific exposed port (default: 8181)")
 parser.add_argument("--host", type=str, default="0.0.0.0", help="Set specific exposed host IP (default: 0.0.0.0)")
 
+@app.route("/docker/ps", methods=["GET"])
+def get_docker_ps():
+    """Retrieve the list of running Docker containers with specific details."""
+    try:
+        # Run the 'docker ps' command and capture the output
+        result = subprocess.run(
+            ["docker", "ps", "--format", "{{.ID}} {{.Image}} {{.Names}} {{.CreatedAt}} {{.Status}}"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+        # Process the result and format it as a list of dictionaries
+        containers = []
+        for line in result.stdout.strip().split("\n"):
+            container_info = line.split()
+            container = {
+                "id": container_info[0],
+                "image": container_info[1],
+                "names": container_info[2],
+                "created": " ".join(container_info[3:5]),
+                "status": " ".join(container_info[5:])
+            }
+            containers.append(container)
+
+        return jsonify(containers), 200
+
+    except subprocess.CalledProcessError as e:
+        abort(500, description=f"Error retrieving Docker containers: {e.stderr.strip()}")
+
 # Parse arguments
 args = parser.parse_args()
 

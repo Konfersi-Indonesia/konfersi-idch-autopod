@@ -23,13 +23,15 @@ master:
       - assets/2-docker-install.sh
       - assets/3a-docker-swarm-init.sh
       - assets/4-docker-portainer-install.sh
+      - assets/4-portainer-agent-stack.yml
       - assets/5-docker-grafana-install.sh
+      - assets/5-grafana-agent-stack.yml
       - assets/6-docker-nfs-install.sh
       - assets/8-mpich-init.sh
-      - assets/5-grafana-agent-stack.yml
       - assets/8-mpich-agent-stack.yaml
-      - assets/konfersi-service-account-gdrive.json
       - assets/8-mpich-rclone-install.sh
+      - assets/transfer.sh
+      - assets/konfersi-service-account-gdrive.json
       - transfer-config.yaml
     runcmd:
       - 0-init-server.sh

@@ -1,6 +1,19 @@
-target: "/home/mpi/workspace"
-files:
-  - "f5dc66b8d92d44f6e97fd897fdd6d87a.grib"
-  - "d4cb75bfdfdf1a132968908f10121aaf.grib"
-  - "*.tar.gz"
-  - "*.tar.bz2"
+download:
+  enable: true
+  driver: gdrive
+  log: ./transfer-clone.log
+  target: "/home/mpi/workspace/download"
+  files:
+    - "f5dc66b8d92d44f6e97fd897fdd6d87a.grib"
+    - "d4cb75bfdfdf1a132968908f10121aaf.grib"
+    - "*.tar.gz"
+    - "*.tar.bz2"
+extract:
+  enable: true
+  log: ./transfer-extract.log
+  target: "/home/mpi/workspace/download"
+  auto_delete: false
+  files:
+    - "*.tar.gz"
+    - "*.tar.bz2"
+

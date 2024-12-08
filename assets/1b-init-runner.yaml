@@ -6,5 +6,6 @@ master:
   - 5-docker-grafana-install.sh
   - 6-docker-nfs-install.sh
   - 8-mpich-init.sh
+  - 8-mpich-rclone-install.sh
 worker:
   - 3b-docker-swarm-join.sh

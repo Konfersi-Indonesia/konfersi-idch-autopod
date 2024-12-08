@@ -1,5 +1,5 @@
 import pandas as pd
-from autopod_base import config, idch_build_master_node, idch_build_worker_node, idch_delete_cluster, idch_get, idch_get_app_catalog, idch_get_instances, idch_get_os, idch_healthcheck_instance, idch_start_cluster, idch_stop_cluster, idch_sync_cluster
+from autopod.base import config, idch_build_master_node, idch_build_worker_node, idch_delete_cluster, idch_get, idch_get_app_catalog, idch_get_instances, idch_get_os, idch_healthcheck_instance, idch_start_cluster, idch_stop_cluster, idch_sync_cluster
 import sys
 from pprint import pprint
 import subprocess

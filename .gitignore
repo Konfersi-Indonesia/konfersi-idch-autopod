@@ -4,3 +4,5 @@ keys/
 *.log
 */konfersi-service-account-gdrive.json
 __pycache__
+dist
+build

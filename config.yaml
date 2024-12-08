@@ -18,8 +18,6 @@ master:
   os_version: 20.04-lts
   cloud_init:
     files:
-      # - assets/dist/1a-server
-      # - assets/dist/1b-init-runner
       - assets/0-init-server.sh
       - assets/1b-init-runner.yaml
       - assets/2-docker-install.sh
@@ -61,14 +59,12 @@ worker:
   os_version: 20.04-lts
   cloud_init:
     files:
-      - assets/dist/1a-server
-      - assets/dist/1b-init-runner
       - assets/0-init-server.sh
       - assets/1b-init-runner.yaml
       - assets/2-docker-install.sh
       - assets/3a-docker-swarm-join.sh
     runcmd:
-      - 0-init-server.sh
+      - 0-empty.sh
     environments:
   resources:
     cpu: 16 # max

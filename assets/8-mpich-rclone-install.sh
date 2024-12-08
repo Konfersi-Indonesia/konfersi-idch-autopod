@@ -6,8 +6,7 @@ SERVICE_NAME=${MPICH_MASTER_SERVICE_NAME:-mpich_mpi_master}
 RETRY_DELAY=${RETRY_DELAY:-5}
 GDRIVE_CREDENTIAL_FILE=${GDRIVE_CREDENTIAL_FILE:-credential.json}
 TIMEOUT=${RETRY_DELAY:-15}
-INIT_TRANSFER_CONFIG_FILE=${INIT_TRANSFER_CONFIG_FILE:-gdrive-transfer-config.yaml}
-TRANSFER_SCRIPT=${TRANSFER_SCRIPT:-transfer.py}
+INIT_TRANSFER_CONFIG_FILE=${INIT_TRANSFER_CONFIG_FILE:-transfer-config.yaml}
 
 if [ -z "$GDRIVE_ROOT_FOLDER_ID" ]; then
   echo "Error: GDRIVE_ROOT_FOLDER_ID is not set or is empty."
@@ -49,8 +48,7 @@ docker exec ${CONTAINER_ID} sh -c "sudo apt install rclone -y"
 
 echo "Copying files"
 docker cp ${SCRIPT_PATH}/${GDRIVE_CREDENTIAL_FILE} ${CONTAINER_ID}:/home/mpi/credential.json
-docker cp ${SCRIPT_PATH}/${INIT_TRANSFER_CONFIG_FILE} ${CONTAINER_ID}:/home/mpi/workspace/transfer.yaml
-docker cp ${SCRIPT_PATH}/${TRANSFER_SCRIPT} ${CONTAINER_ID}:/home/mpi/workspace/transfer.py
+docker cp ${SCRIPT_PATH}/${INIT_TRANSFER_CONFIG_FILE} ${CONTAINER_ID}:/home/mpi/workspace/transfer-config.yaml
 
 # Define file content
 FILE_CONTENT="[gdrive]
@@ -62,4 +60,3 @@ service_account_file = /home/mpi/credential.json"
 echo "Execute transfer files"
 docker exec ${CONTAINER_ID} sh -c "mkdir -p ~/.config/rclone"
 docker exec ${CONTAINER_ID} sh -c "echo \"${FILE_CONTENT}\" > ~/.config/rclone/rclone.conf"
-docker exec ${CONTAINER_ID} sh -c "python3 /home/mpi/workspace/transfer.py /home/mpi/workspace/transfer.yaml"

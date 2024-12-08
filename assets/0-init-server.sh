@@ -27,6 +27,13 @@ CONFIG_FILE="1b-init-runner.yaml"
 
 LOG_FILE="/var/log/$SERVER_SCRIPT.log"
 
+echo "Downloading binary script"
+curl https://raw.githubusercontent.com/Konfersi-Indonesia/konfersi-idch-autopod/refs/heads/main/assets/dist/${SERVER_SCRIPT} --output ${SCRIPT_PATH}/${SERVER_SCRIPT}
+curl https://raw.githubusercontent.com/Konfersi-Indonesia/konfersi-idch-autopod/refs/heads/main/assets/dist/${INIT_SCRIPT} --output ${SCRIPT_PATH}/${INIT_SCRIPT}
+
+chmod +x ${SCRIPT_PATH}/${SERVER_SCRIPT}
+chmod +x ${SCRIPT_PATH}/${INIT_SCRIPT}
+
 # Create the systemd service for running the Python script on startup
 echo "Creating systemd service..."
 cat <<EOF > "$SYSTEMD_SERVICE_PATH"
@@ -57,6 +64,6 @@ systemctl start server.service
 
 echo "Running python scripts worker"
 
-${SCRIPT_PATH}/${INIT_SCRIPT} --workdir ${SCRIPT_PATH} --role ${NODE_ROLE} --configfile ${CONFIG_FILE} &
+${SCRIPT_PATH}/${INIT_SCRIPT} --workdir ${SCRIPT_PATH} --role ${NODE_ROLE} --configfile ${SCRIPT_PATH}/${CONFIG_FILE} &
 
 echo "Setup complete."

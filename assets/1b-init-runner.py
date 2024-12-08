@@ -55,6 +55,10 @@ if "global" in config:
     
 if role:
     scripts += config[role]
+    
+print("Script to run:")
+for script in scripts:
+    print(script)
 
 # Function to get the last 10 lines of a log file
 def get_log_tail(log_file, lines=10):

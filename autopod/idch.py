@@ -17,18 +17,18 @@ idch_header = {
 
 def idch_get(path):
     url = os.path.join(config.idch.host, path.format(location=config.cluster.location))
-    print('GET ' + url)
+    # print('GET ' + url)
     return handle_json_resp(re.get(url, headers=idch_header))
 
 def idch_post(path, data):
     url = os.path.join(config.idch.host, path.format(location=config.cluster.location))
-    print('POST ' + url)
+    # print('POST ' + url)
     return handle_json_resp(re.post(url, headers=idch_header, data=data))
     
     
 def idch_delete(path, data=None):
     url = os.path.join(config.idch.host, path.format(location=config.cluster.location))
-    print('DELETE ' + url)
+    # print('DELETE ' + url)
     handle_json_resp(re.delete(url, headers=idch_header, data=data))
 
 def idch_delete_cluster():
@@ -44,6 +44,14 @@ def idch_delete_cluster():
         for future in futures:
             future.result()  # Blocks until the task is done     
         
+def idch_get_master_ip(ip_type="public"):
+    df = idch_get_instances()  # Assume this returns a DataFrame with instance details
+    if (df.empty): return
+    
+    filtered_df = df[df['name'].str.contains('_master_') & df['public_ipv4'].notna() & (df['public_ipv4'] != '')]
+    first_row = filtered_df.head(1)
+    
+    return first_row[f'{ip_type}_ipv4'].item()
 
 def idch_build_node(node_config, resource_config, role="master", environments = {}, id=1):
     with open(config.cluster.keypair.public, "r") as file:
@@ -68,6 +76,10 @@ def idch_build_node(node_config, resource_config, role="master", environments = 
         "public_key": public_key,
         "cloud_init": cloud_init_generator(node_config.cloud_init.files, node_config.cloud_init.runcmd, environments["CLOUD_INIT_WORKDIR"], environments=environments)
     }
+    
+    df = pd.DataFrame([data])
+    print(df[["name", "os_name", "os_version", "disks", "vcpu", "ram"]])
+    
 
     return idch_post("v1/{location}/user-resource/vm", data)
     
@@ -132,18 +144,30 @@ def idch_get_app_catalog():
     return app_catalogs 
 
 def idch_build_master_node(init=False):
+    print("Building master node...")
     if (init):
-        return idch_build_node(config.master, config.master.init_resources)
+        return idch_build_node(config.master, config.master.resources.init)
     else:
         return idch_build_node(config.master, config.master.resources)
 
 def idch_build_worker_node():
-    # perhaps add looping
-    master_node_ip = "192.168.0.1"
+    f"Building {config.worker.nodes} worker nodes..."
+    master_node_ip = idch_get_master_ip(ip_type="private")
+
+    def runner(id, master_node_ip):
+        idch_build_node(config.worker, config.worker.resources, role="worker", id=id, environments={
+            "MASTER_NODE_IP": master_node_ip
+        })
     
-    return idch_build_node(config.worker, config.worker.resource, environments={
-        "MASTER_NODE_IP": master_node_ip
-    })
+    with ThreadPoolExecutor() as executor:
+        # Submit delete tasks and wait for all of them to complete
+        futures = [executor.submit(runner, id, master_node_ip) for id in range(1, int(config.worker.nodes) + 1)]
+        
+        # Wait for all tasks to complete
+        for future in futures:
+            future.result()  # Blocks until the task is done   
+    
+    return 'Build complete please do "autopod vm ls" to check spawned vms'
     
 def idch_stop_node():
     pass
@@ -234,6 +258,7 @@ def idch_healthcheck_instance():
     logs_count = {}
 
     while len(healthy_set) != len(instances):  # Corrected condition
+        
         for ip in instances['public_ipv4']:
             ip = str(ip)
             if ip in healthy_set:  # Corrected to check if IP is in healthy_set
@@ -256,20 +281,15 @@ def idch_healthcheck_instance():
                 new_logs = new_logs.fillna("")
                 
                 print(new_logs.to_string(header=len(logs_count) == 1, index=False))
-                logs_count[ip] = new_logs_count
+                logs_count[ip] += new_logs_count
     
         time.sleep(1)
+        instances = idch_get_instances()  # Assume this returns a DataFrame with instance details
         
     return "All services are healthy"
 
 def idch_get_cluster_services():
-    df = idch_get_instances()  # Assume this returns a DataFrame with instance details
-    if (df.empty): return
-    
-    filtered_df = df[df['name'].str.contains('_master_') & df['public_ipv4'].notna() & (df['public_ipv4'] != '')]
-    first_row = filtered_df.head(1)
-    
-    ip = first_row['public_ipv4'].item()
+    ip = idch_get_master_ip()
     
     return pd.DataFrame([{
         "service": "grafana",

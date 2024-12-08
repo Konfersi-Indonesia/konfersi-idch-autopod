@@ -27,11 +27,7 @@ def process_args(menu, args, level=0):
 
     if current_arg in menu:
         if isinstance(menu[current_arg], dict):
-            if ("default" in menu[current_arg]):
-                result = menu[current_arg]['default']()
-                print_df(result)
-                return
-            
+        
             # If the current menu item is a dict, it means there are more options to choose from
             if level == len(args) - 1: print_help(menu[current_arg])
             process_args(menu[current_arg], args, level + 1)
@@ -56,10 +52,8 @@ if __name__ == "__main__":
                 "app": idch_get_app_catalog
             },
             "build": {
-                "master": {
-                    "init": lambda: idch_build_master_node(init=True),
-                    "default": idch_build_master_node
-                },
+                "master_init": lambda: idch_build_master_node(init=True),
+                "master": idch_build_master_node,
                 "worker": idch_build_worker_node
             },  
             "shell": idch_open_shell,

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo apt-get install jq -y
+
 # Check if MASTER_NODE_IP environment variable is set
 if [ -z "$MASTER_NODE_IP" ]; then
     echo "Error: MASTER_NODE_IP environment variable is not set."

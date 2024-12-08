@@ -46,14 +46,16 @@ master:
       - "MPICH_WORKER_REPLICAS=5"
       - "MPICH_WORKER_CPU_LIMIT=15"
       - "MPICH_WORKER_MEMORY_LIMIT=2500"
-  init_resources:
-    cpu: 2 # min
-    memory: 2 # min
-    storage: 150
+  
   resources:
     cpu: 16 # max
     memory: 8 # min
     storage: 200
+    init:
+      cpu: 2 # min
+      memory: 2 # min
+      storage: 150
+    
 
 worker:
   nodes: 5
@@ -64,11 +66,12 @@ worker:
       - assets/0-init-server.sh
       - assets/1b-init-runner.yaml
       - assets/2-docker-install.sh
-      - assets/3a-docker-swarm-join.sh
+      - assets/3b-docker-swarm-join.sh
+      - assets/0-empty.sh
     runcmd:
-      - 0-empty.sh
+      - 0-init-server.sh
     environments:
   resources:
-    cpu: 16 # max
-    memory: 8 # max
+    cpu: 2 # max
+    memory: 2 # max
     storage: 20 # min

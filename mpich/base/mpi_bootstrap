@@ -1,0 +1,43 @@
+#!/bin/sh
+
+if [ "$ROLE" = "" ]; then
+    echo "ERROR: Role must be specified as either 'master' or 'worker'."
+    exit 1
+fi
+
+sudo bash -c 'cat > /etc/opt/service_names <<- EOF
+MASTER_HOSTNAME=${MASTER_HOSTNAME}
+WORKER_HOSTNAME=${WORKER_HOSTNAME}
+EOF'
+
+case $ROLE in
+    "master")
+        code-server --auth password --bind-addr 0.0.0.0:3000 &
+
+        # Auto update default host file in background and dumb all output
+        auto_update_hosts "${HYDRA_HOST_FILE}" > /dev/null 2>&1 &
+
+        # Start ssh server
+        sudo /usr/sbin/sshd -D
+        ;;
+
+    "worker")
+        # Start ssh server in background
+        sudo /usr/sbin/sshd -D &
+
+        # Wait a moment for sshd to start
+        sleep 2
+
+        # Keep trying to connect to master node
+        while sleep 1
+        do
+            ssh -T -o "StrictHostKeyChecking no" \
+                -i "${USER_HOME}/.ssh/id_rsa" \
+                ${USER}@${MASTER_HOSTNAME} \
+                "tail -f /dev/null"
+        done
+        ;;
+    *)
+        echo 'role argument only accepts "master" or "worker"'
+        exit 1
+esac

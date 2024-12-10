@@ -78,7 +78,7 @@ def idch_build_node(node_config, resource_config, role="master", environments = 
     }
     
     df = pd.DataFrame([data])
-    print(df[["name", "os_name", "os_version", "disks", "vcpu", "ram"]])
+    print(df[["name", "os_name", "os_version", "disks", "vcpu", "ram"]].to_string(index=False, columns=False))
     
 
     return idch_post("v1/{location}/user-resource/vm", data)

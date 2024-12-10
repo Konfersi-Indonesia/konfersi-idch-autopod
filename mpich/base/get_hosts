@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Include the variables that store the Docker service names
+# shellcheck disable=SC1091
+. /etc/opt/service_names
+
+( dig +nocmd +nocomments +noquestion +nostats "$MASTER_HOSTNAME" | \
+  awk '{print $5}' \
+& dig +nocmd +nocomments +noquestion +nostats "$WORKER_HOSTNAME" | \
+  awk '{print $5}' \
+& dig +nocmd +nocomments +noquestion +nostats "tasks.$WORKER_HOSTNAME"|\
+  awk '{print $5}' ) | sort -u
